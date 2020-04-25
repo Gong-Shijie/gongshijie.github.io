@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.0"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>15</title><meta description="title: Android：Jetpack Navigation DrawerMenu框架 界面间导航抽屉菜单tags: [android]categories: android    应用框架，抽屉菜单和底部导航"><meta property="og:type" content="blog"><meta property="og:title" content="15"><meta property="og:url" content="http://yoursite.com/2020/04/25/15/"><meta property="og:site_name" content="gongshijie"><meta property="og:description" content="title: Android：Jetpack Navigation DrawerMenu框架 界面间导航抽屉菜单tags: [android]categories: android    应用框架，抽屉菜单和底部导航"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-63b5dfc0ce4bc0f1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-adca2c98c887c9b5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-a9bdd3337818976f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-3f7e28c749552523.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-fe2af1029bcb1c53.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-582a7993568eda97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-d3db3628b529dee6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-b1f93adf08f380a0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-2c5ce9403972d015.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-6ac7ecf66f426727.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><meta property="article:published_time" content="2020-04-25T05:30:52.882Z"><meta property="article:modified_time" content="2020-04-25T05:32:25.233Z"><meta property="article:author" content="gongshijie"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://upload-images.jianshu.io/upload_images/19741117-63b5dfc0ce4bc0f1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://yoursite.com/2020/04/25/15/"},"headline":"","image":[],"datePublished":"2020-04-25T05:30:52.882Z","dateModified":"2020-04-25T05:32:25.233Z","author":{"@type":"Person","name":"GongSJ"},"description":"title: Android：Jetpack Navigation DrawerMenu框架 界面间导航抽屉菜单tags: [android]categories: android    应用框架，抽屉菜单和底部导航"}</script><link rel="canonical" href="http://yoursite.com/2020/04/25/15/"><link rel="icon" href="/img/coffe.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.svg" alt="" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">主页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/Gong-Shijie"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><time class="level-item" dateTime="2020-04-25T05:30:52.882Z" title="2020-04-25T05:30:52.882Z">2020-04-25</time><span class="level-item">6 分钟 读完 (大约 956 个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">15</h1><div class="content"><hr>
+<p>title: Android：Jetpack Navigation DrawerMenu框架 界面间导航抽屉菜单<br>tags: [android]<br>categories: android  </p>
+<hr>
+<p>应用框架，抽屉菜单和底部导航</p>
+<a id="more"></a>  
+
+
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-63b5dfc0ce4bc0f1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="开始使用Navigation">    </p>
+<p>demo:<a href="https://github.com/Gong-Shijie/navWithDrawer">https://github.com/Gong-Shijie/navWithDrawer</a></p>
+<h3 id="应用框架"><a href="#应用框架" class="headerlink" title="应用框架"></a>应用框架</h3><p><img src="https://upload-images.jianshu.io/upload_images/19741117-adca2c98c887c9b5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Android studio直接创建"><br>Google建议开发者只使用一个Activity搭配Fragment来架构程序<br>可以直接new一个Navigation Drawer的项目  </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-a9bdd3337818976f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>进一步调整为需要的效果  </p>
+<hr>
+<h4 id="Drawer菜单"><a href="#Drawer菜单" class="headerlink" title="Drawer菜单"></a>Drawer菜单</h4><p>首先要了解菜单Menu，菜单在Android部件系统中有三种类型<br><img src="https://upload-images.jianshu.io/upload_images/19741117-3f7e28c749552523.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Drawer Menu"><br><img src="https://upload-images.jianshu.io/upload_images/19741117-fe2af1029bcb1c53.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Toolbar菜单"><br><img src="https://upload-images.jianshu.io/upload_images/19741117-582a7993568eda97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="底部菜单"><br>对于这些菜单我们都可以通过他们来进行页面导航切换<br>使用方法是直接在创建项目的时候使用提供的模板  </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-d3db3628b529dee6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>根据这些默认模板可以减少项目构建的封锁步骤<br>viewmodel也可以勾选省去创建ViewModel步骤  </p>
+<hr>
+<h4 id="创建一个Navigation-Drawer-应用"><a href="#创建一个Navigation-Drawer-应用" class="headerlink" title="创建一个Navigation Drawer 应用"></a>创建一个Navigation Drawer 应用</h4><p><img src="https://upload-images.jianshu.io/upload_images/19741117-b1f93adf08f380a0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MainXML"></p>
+<p>重写方法实现对所有菜单监听<br><img src="https://upload-images.jianshu.io/upload_images/19741117-2c5ce9403972d015.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="处理toolbar菜单监听"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;只要是菜单选项被点击都会调用该方法</span><br><span class="line">  @Override</span><br><span class="line">  public boolean onOptionsItemSelected(@NonNull MenuItem item) &#123;</span><br><span class="line">      switch (item.getItemId()) &#123;</span><br><span class="line">          case R.id.action_settings:</span><br><span class="line">             Toast.makeText(this, &quot;Click !&quot;, Toast.LENGTH_SHORT).show();</span><br><span class="line">              break;</span><br><span class="line">          case R.id.action_settidfngs:</span><br><span class="line">             Toast.makeText(this, &quot;Click ! &quot;, Toast.LENGTH_SHORT).show();</span><br><span class="line">              break;</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line">      return super.onOptionsItemSelected(item);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>动态修改和设置抽屉菜单<br><img src="https://upload-images.jianshu.io/upload_images/19741117-6ac7ecf66f426727.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="drawer菜单"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">   &#x2F;&#x2F;动态添加menuItem项设置id</span><br><span class="line">        Menu menu &#x3D; navigationView.getMenu();</span><br><span class="line">        menu.clear();</span><br><span class="line">        menu.add(0, R.id.nav_gallery, 0, &quot;gallery&quot;).</span><br><span class="line">setIcon(R.drawable.ic_menu_gallery);</span><br><span class="line">        menu.add(0, R.id.nav_send, 1, &quot;send&quot;).</span><br><span class="line">setIcon(R.drawable.ic_menu_send);</span><br><span class="line">&#x2F;&#x2F;设置点击监听但是不要消耗点击事件否则影响导航</span><br><span class="line">  menu.getItem(0).setOnMenuItemClickListener();</span><br><span class="line">&#96;&#96;&#96;   </span><br><span class="line"> *****</span><br><span class="line">#### Navigation  </span><br><span class="line">![](https:&#x2F;&#x2F;upload-images.jianshu.io&#x2F;upload_images&#x2F;19741117-79c6c96892eab3b1.png?imageMogr2&#x2F;auto-orient&#x2F;strip%7CimageView2&#x2F;2&#x2F;w&#x2F;1240)</span><br><span class="line">*****</span><br><span class="line">#### 主要代码  </span><br><span class="line"></span><br><span class="line">MainActivity.java</span><br></pre></td></tr></table></figure>
+<p>public class MainActivity extends AppCompatActivity {</p>
+<pre><code>private AppBarConfiguration mAppBarConfiguration;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    Toolbar toolbar = findViewById(R.id.toolbar);
+    //实现toolbar替换默认的Actionbar
+    setSupportActionBar(toolbar);
+
+    DrawerLayout drawer = findViewById(R.id.drawer_layout);
+    NavigationView navigationView = findViewById(R.id.nav_view);</code></pre><p>//将NavController 和app bar这种menu绑定从而实现Fragment切换的管理<br>//        也可以和其他的menu类型绑定<br>        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);<br>        mAppBarConfiguration = new AppBarConfiguration.Builder(<br>                navController.getGraph()<br>        )<br>                .setDrawerLayout(drawer)<br>                .build();</p>
+<pre><code>    NavigationUI.setupActionBarWithNavController(this,
+            navController, mAppBarConfiguration);
+
+    //使得drawer显示
+    NavigationUI.setupWithNavController(navigationView,
+            navController);
+
+    //动态添加menuItem项设置id
+    Menu menu = navigationView.getMenu();
+
+    menu.clear();
+    menu.add(0, R.id.nav_gallery, 0, &quot;gallery&quot;).setIcon(R.drawable.ic_menu_gallery);
+    menu.add(0, R.id.nav_send, 1, &quot;send&quot;).setIcon(R.drawable.ic_menu_send);
+
+}
+
+//设置actionbar中的菜单显示
+@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the menu; this adds items to the action bar if it is present.
+    getMenuInflater().inflate(R.menu.main, menu);
+    return true;
+}
+
+//只要是菜单选项被点击都会调用该方法
+@Override
+public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    switch (item.getItemId()) {
+        case R.id.action_settings:
+            Toast.makeText(this, &quot;Click !&quot;, Toast.LENGTH_SHORT).show();
+            break;
+        case R.id.action_settidfngs:
+            Toast.makeText(this, &quot;Click ! &quot;, Toast.LENGTH_SHORT).show();
+            break;
+
+    }
+    return super.onOptionsItemSelected(item);
+}
+
+//处理左上角的菜单被点击的时候的回调
+@Override
+public boolean onSupportNavigateUp() {
+    NavController navController = Navigation.findNavController(this,
+            R.id.nav_host_fragment);
+    return NavigationUI.navigateUp(navController, mAppBarConfiguration)
+            || super.onSupportNavigateUp();
+}</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">*****  </span><br><span class="line"></span><br><span class="line">activity_main.xml</span><br></pre></td></tr></table></figure>
+<?xml version="1.0" encoding="utf-8"?>
+<p>&lt;androidx.drawerlayout.widget.DrawerLayout xmlns:android=”<a href="http://schemas.android.com/apk/res/android&quot;">http://schemas.android.com/apk/res/android&quot;</a><br>    xmlns:app=”<a href="http://schemas.android.com/apk/res-auto&quot;">http://schemas.android.com/apk/res-auto&quot;</a><br>    xmlns:tools=”<a href="http://schemas.android.com/tools&quot;">http://schemas.android.com/tools&quot;</a><br>    android:id=”@+id/drawer_layout”<br>    android:layout_width=”match_parent”<br>    android:layout_height=”match_parent”<br>    android:fitsSystemWindows=”true”<br>    tools:openDrawer=”start”&gt;</p>
+<pre><code>&lt;include
+    layout=&quot;@layout/app_bar_main&quot;
+    android:layout_width=&quot;match_parent&quot;
+    android:layout_height=&quot;match_parent&quot; /&gt;
+
+&lt;com.google.android.material.navigation.NavigationView
+    android:id=&quot;@+id/nav_view&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;match_parent&quot;
+    android:layout_gravity=&quot;start&quot;
+    android:fitsSystemWindows=&quot;true&quot;
+    app:headerLayout=&quot;@layout/nav_header_main&quot;
+    app:menu=&quot;@menu/activity_main_drawer&quot; /&gt;</code></pre><p>&lt;/androidx.drawerlayout.widget.DrawerLayout&gt;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*****  </span><br><span class="line">HomeFragment.java</span><br></pre></td></tr></table></figure>
+<p>public class HomeFragment extends Fragment {</p>
+<pre><code>private HomeViewModel homeViewModel;
+
+public View onCreateView(@NonNull LayoutInflater inflater,
+                         ViewGroup container, Bundle savedInstanceState) {
+    homeViewModel =
+            new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+    View root = inflater.inflate(R.layout.fragment_home, container, false);
+    final TextView textView = root.findViewById(R.id.text_home);
+    homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer&lt;String&gt;() {
+        @Override
+        public void onChanged(@Nullable String s) {
+            textView.setText(s);
+        }
+    });
+    return root;
+}</code></pre><p>}</p>
+<pre><code>
+
+
+
+
+</code></pre></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button is-success donate"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/pay.png" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/04/25/16/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">16</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/04/25/14/"><span class="level-item">14</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="" src="/img/profile.png"></figure><p class="is-size-6 is-block">Gong.S J</p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">25</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">0</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">0</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/Gong-Shijie" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="/null"><i></i></a></div></div></div><!--!--><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile is-mobile" href="https://www.jianshu.com/u/1b50e6f81df3" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">简书</span></span><span class="level-right"><span class="level-item tag">www.jianshu.com</span></span></a></li></ul></div></div></div><!--!--><div class="card widget"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-25T05:44:03.291Z">2020-04-25</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/25/25/">25</a></p><p class="is-uppercase"></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-25T05:42:46.799Z">2020-04-25</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/25/24/">24</a></p><p class="is-uppercase"></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-25T05:41:29.348Z">2020-04-25</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/25/23/">23</a></p><p class="is-uppercase"></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-25T05:40:32.339Z">2020-04-25</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/25/22/">22</a></p><p class="is-uppercase"></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-25T05:38:18.995Z">2020-04-25</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/25/21/">21</a></p><p class="is-uppercase"></p></div></article></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/archives/2020/04/"><span class="level-start"><span class="level-item">四月 2020</span></span><span class="level-end"><span class="level-item tag">25</span></span></a></li></ul></div></div></div><!--!--></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.svg" alt="" height="28"></a><p class="size-small"><span>&copy; 2020 GongSJ</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            site: {
+                url: 'http://yoursite.com',
+                external_link: {"enable":true,"exclude":[]}
+            },
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
