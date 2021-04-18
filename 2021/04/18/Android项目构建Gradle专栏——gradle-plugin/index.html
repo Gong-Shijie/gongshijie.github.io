@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+<meta name="google-site-verification" content="Fhhhr12IuMEKjzZ0EyR0N0OzrzXxnZxtyrfTudM39vc" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"gongshijier.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="公众号地址：  https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;P9DgxZ22kwIXCl_M5urxCg">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android项目构建Gradle专栏——gradle plugin">
+<meta property="og:url" content="https://gongshijier.github.io/2021/04/18/Android%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BAGradle%E4%B8%93%E6%A0%8F%E2%80%94%E2%80%94gradle-plugin/index.html">
+<meta property="og:site_name" content="Code A Better Life">
+<meta property="og:description" content="公众号地址：  https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;P9DgxZ22kwIXCl_M5urxCg">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-c305fe41b7f6e285.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-4f9788f7b75019ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-9e18097447fdfdfd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-d47925166d56ece7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-43330671cdb2d961.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-ca110ae6a6ccee43.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-8ef50e66660c0871.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-136ebd455dd29d61.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-2a32c2a96a1f3bf5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2021-04-18T07:07:11.000Z">
+<meta property="article:modified_time" content="2021-04-18T07:08:01.879Z">
+<meta property="article:author" content="龚世杰">
+<meta property="article:tag" content="android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/19741117-c305fe41b7f6e285.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+<link rel="canonical" href="https://gongshijier.github.io/2021/04/18/Android%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BAGradle%E4%B8%93%E6%A0%8F%E2%80%94%E2%80%94gradle-plugin/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android项目构建Gradle专栏——gradle plugin | Code A Better Life</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Code A Better Life</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>专栏</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>博文</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gongshijier.github.io/2021/04/18/Android%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BAGradle%E4%B8%93%E6%A0%8F%E2%80%94%E2%80%94gradle-plugin/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="龚世杰">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Code A Better Life">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android项目构建Gradle专栏——gradle plugin
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-18 15:07:11 / 修改时间：15:08:01" itemprop="dateCreated datePublished" datetime="2021-04-18T15:07:11+08:00">2021-04-18</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <meta name="referrer" content="no-referrer" />
+
+<p>公众号地址：  <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/P9DgxZ22kwIXCl_M5urxCg">https://mp.weixin.qq.com/s/P9DgxZ22kwIXCl_M5urxCg</a></p>
+<hr>
+<span id="more"></span>
+
+
+<h1 id="1-gradle-build生命周期"><a href="#1-gradle-build生命周期" class="headerlink" title="1. gradle build生命周期"></a>1. gradle build生命周期</h1><p>gradle是Android用来build的工具， 而gradle plugin是封装好的可以复用的gradle script  </p>
+<p>gradle build的声明周期如下： </p>
+<ul>
+<li>Initialization  </li>
+<li>Configuration  </li>
+<li>Execution<br><img src="https://upload-images.jianshu.io/upload_images/19741117-c305fe41b7f6e285.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-4f9788f7b75019ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-9e18097447fdfdfd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>在项目中使用的gradle plugin：<br>build.gradle文件中  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line">    id &#39;java-gradle-plugin&#39;</span><br><span class="line">    id &#39;maven-publish&#39;</span><br><span class="line">    id &#39;ivy-publish&#39;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>声明使用的gradle插件在configuration阶段会进行解析，提取里面的task构造有向无环图<br>然后在 execution 阶段依次根据图执行 task 完成 build  </p>
+<h1 id="2-开发-gradle-插件"><a href="#2-开发-gradle-插件" class="headerlink" title="2. 开发 gradle 插件"></a>2. 开发 gradle 插件</h1><p>首先开发一个 gradle plugin，有以下方法： </p>
+<ul>
+<li>Build script： build.gradle 中写  </li>
+<li>buildSrc project：rootProjectDir/buildSrc/src/main/java下写   </li>
+<li>Standalone project：插件独立 project 开发后打成jar包，其他项目依赖jar包使用plugin<br>可以参考官方 gradle 开发手册中：<br><img src="https://upload-images.jianshu.io/upload_images/19741117-d47925166d56ece7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><br>最简单的方法开发一个插件： build.gradle 中进行开发<br>最常用的方法开发插件： 独立project中开发，这样其他 project 通过依赖jar包，可以轻松引入使用  </li>
+</ul>
+<h1 id="3-build-gradle-开发-gradle-plugin"><a href="#3-build-gradle-开发-gradle-plugin" class="headerlink" title="3. build.gradle 开发 gradle plugin"></a>3. build.gradle 开发 gradle plugin</h1><p>在项目 build.gradle 中直接声明和使用 自定义 gradle plugin   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class GreetingPlugin implements Plugin&lt;Project&gt; &#123;</span><br><span class="line">    void apply(Project project) &#123;</span><br><span class="line">        project.task(&#39;hello&#39;) &#123;</span><br><span class="line">            doLast &#123;</span><br><span class="line">                println &#39;Hello from the GreetingPlugin&#39;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Apply the plugin</span><br><span class="line">apply plugin: GreetingPlugin</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行这个 task  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle -q hello</span><br></pre></td></tr></table></figure>
+<p>这样就可以运行这个自定义的 task  </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-43330671cdb2d961.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>增加定义 extension 然后在 build.gradle 中配置，在 plugin 中读取配置运行  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">interface GreetingPluginExtension &#123;</span><br><span class="line">    Property&lt;String&gt; getMessage()</span><br><span class="line">    Property&lt;String&gt; getGreeter()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class GreetingPlugin implements Plugin&lt;Project&gt; &#123;</span><br><span class="line">    void apply(Project project) &#123;</span><br><span class="line">        def extension &#x3D; project.extensions.create(&#39;greeting&#39;, GreetingPluginExtension)</span><br><span class="line">        project.task(&#39;hello&#39;) &#123;</span><br><span class="line">            doLast &#123;</span><br><span class="line">                println &quot;$&#123;extension.message.get()&#125; from $&#123;extension.greeter.get()&#125;&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">apply plugin: GreetingPlugin</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Configure the extension using a DSL block</span><br><span class="line">greeting &#123;</span><br><span class="line">    message &#x3D; &#39;Hi&#39;</span><br><span class="line">    greeter &#x3D; &#39;Gradle&#39;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-ca110ae6a6ccee43.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h1 id="4-独立项目-开发-gradle-plugin"><a href="#4-独立项目-开发-gradle-plugin" class="headerlink" title="4. 独立项目 开发 gradle plugin"></a>4. 独立项目 开发 gradle plugin</h1><p>独立项目中开发的 gradle plugin提供给其他的 project 使用需要打出 jar 包<br>然后使用 classpath 来依赖 jar 包，即可在 使用的 build.gradle 中使用该 plugin  </p>
+<p>开发和上传 gradle plugin  </p>
+<ol>
+<li>新建一个 module  </li>
+<li>build.gradle 文件：  </li>
+</ol>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line">    id &#39;groovy&#39;</span><br><span class="line">    id &#39;java-library&#39;</span><br><span class="line">    id &#39;maven&#39;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    implementation gradleApi()</span><br><span class="line">    implementation &#39;com.android.tools.build:gradle:4.1.3&#39;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">uploadArchives &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        mavenDeployer &#123;</span><br><span class="line">            pom.groupId &#x3D; &#39;com.gongshijie.greet&#39;</span><br><span class="line">            pom.version &#x3D; &#39;1.0&#39;</span><br><span class="line">            pom.artifactId &#x3D; &#39;greet&#39;</span><br><span class="line">            &#x2F;&#x2F; repo仓库路径，可以使用相对路径</span><br><span class="line">            repository(url: uri(&#39;..&#x2F;..&#x2F;repo&#39;))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li><p>插件内容代码：    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">class GreetingPlugin implements Plugin&lt;Project&gt; &#123;</span><br><span class="line">    void apply(Project project) &#123;</span><br><span class="line">        project.task(&#39;hello&#39;) &#123;</span><br><span class="line">            doLast &#123;</span><br><span class="line">                println &#39;Hello from the GreetingPlugin&#39;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>插件资源描述：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation-class&#x3D;com.gongshijie.plugin.GreetingPlugin</span><br></pre></td></tr></table></figure>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-8ef50e66660c0871.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="目录结构"></p>
+</li>
+<li><p>插件的使用<br>在需要使用插件的 module build.gradle 中<br><img src="https://upload-images.jianshu.io/upload_images/19741117-136ebd455dd29d61.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><br>也可以单独在 gradle侧边栏 other 下看到该插件中的task<br><img src="https://upload-images.jianshu.io/upload_images/19741117-2a32c2a96a1f3bf5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+</li>
+</ol>
+<p>以上就完成了一个插件开发的过程  </p>
+<p>实际上 可以使用 Bytex 来进行插件开发，然后使用 Jitpack 来进行插件的发布，后面我们会介绍如何使用ByteX开发插件，如何发布插件到 Jitpack 供其他项目通过classpath 形式引入  </p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="龚世杰 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+  <div class="followme">
+    <p>微信扫码关注公众号，追踪更多博文</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/images/wechat_channel.jpg">
+            <span class="icon">
+              <i class="fab fa-weixin"></i>
+            </span>
+
+            <span class="label">WeChat</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/02/Android%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BAGradle%E4%B8%93%E6%A0%8F%E2%80%94%E2%80%94build%E5%9F%BA%E7%A1%80/" rel="prev" title="Android项目构建Gradle专栏——build基础">
+      <i class="fa fa-chevron-left"></i> Android项目构建Gradle专栏——build基础
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-gradle-build%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-text">1. gradle build生命周期</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%BC%80%E5%8F%91-gradle-%E6%8F%92%E4%BB%B6"><span class="nav-text">2. 开发 gradle 插件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-build-gradle-%E5%BC%80%E5%8F%91-gradle-plugin"><span class="nav-text">3. build.gradle 开发 gradle plugin</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E7%8B%AC%E7%AB%8B%E9%A1%B9%E7%9B%AE-%E5%BC%80%E5%8F%91-gradle-plugin"><span class="nav-text">4. 独立项目 开发 gradle plugin</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="龚世杰"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">龚世杰</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">博文</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">专栏</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gongshijier" title="github → https:&#x2F;&#x2F;github.com&#x2F;gongshijier" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>github</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/gong.shijie@qq.com" title="mail → gong.shijie@qq.com"><i class="fa fa-envelope fa-fw"></i>mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">龚世杰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
