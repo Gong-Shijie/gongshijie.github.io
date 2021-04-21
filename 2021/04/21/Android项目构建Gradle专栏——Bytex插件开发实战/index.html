@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+<meta name="google-site-verification" content="Fhhhr12IuMEKjzZ0EyR0N0OzrzXxnZxtyrfTudM39vc" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"gongshijier.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="公众号地址： https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;sq1AdQA9_DbhJDE2IKuVeQ项目代码：https:&#x2F;&#x2F;github.com&#x2F;gongshijier&#x2F;ByteX">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android项目构建Gradle专栏——Bytex插件开发实战">
+<meta property="og:url" content="https://gongshijier.github.io/2021/04/21/Android%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BAGradle%E4%B8%93%E6%A0%8F%E2%80%94%E2%80%94Bytex%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/index.html">
+<meta property="og:site_name" content="Code A Better Life">
+<meta property="og:description" content="公众号地址： https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;sq1AdQA9_DbhJDE2IKuVeQ项目代码：https:&#x2F;&#x2F;github.com&#x2F;gongshijier&#x2F;ByteX">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-53ffc519cf558d49.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-84db9a9d55369dcd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-3cd4713280ba5456.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-fc14904e07a3ed7f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-b923e27a64705ba3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-f10bd5b53a2f1d77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-97701520166e32ca.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-6e3eadf76cc4599e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-822c795637d1abd7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2021-04-21T06:54:05.000Z">
+<meta property="article:modified_time" content="2021-04-21T06:55:56.599Z">
+<meta property="article:author" content="龚世杰">
+<meta property="article:tag" content="android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/19741117-53ffc519cf558d49.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+<link rel="canonical" href="https://gongshijier.github.io/2021/04/21/Android%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BAGradle%E4%B8%93%E6%A0%8F%E2%80%94%E2%80%94Bytex%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android项目构建Gradle专栏——Bytex插件开发实战 | Code A Better Life</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Code A Better Life</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>专栏</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>博文</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gongshijier.github.io/2021/04/21/Android%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BAGradle%E4%B8%93%E6%A0%8F%E2%80%94%E2%80%94Bytex%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="龚世杰">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Code A Better Life">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android项目构建Gradle专栏——Bytex插件开发实战
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-21 14:54:05 / 修改时间：14:55:56" itemprop="dateCreated datePublished" datetime="2021-04-21T14:54:05+08:00">2021-04-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">收录于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BAGradle%E4%B8%93%E6%A0%8F/" itemprop="url" rel="index"><span itemprop="name">Android项目构建Gradle专栏</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <meta name="referrer" content="no-referrer" />
+
+<p>公众号地址： <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/sq1AdQA9_DbhJDE2IKuVeQ">https://mp.weixin.qq.com/s/sq1AdQA9_DbhJDE2IKuVeQ</a><br>项目代码：<a target="_blank" rel="noopener" href="https://github.com/gongshijier/ByteX">https://github.com/gongshijier/ByteX</a>  </p>
+<hr>
+<span id="more"></span>
+
+
+<h1 id="1-ByteX介绍"><a href="#1-ByteX介绍" class="headerlink" title="1. ByteX介绍"></a>1. ByteX介绍</h1><p>项目地址： <a target="_blank" rel="noopener" href="https://github.com/bytedance/ByteX">https://github.com/bytedance/ByteX</a><br><img src="https://upload-images.jianshu.io/upload_images/19741117-53ffc519cf558d49.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>如果每一个功能都需要引入一个插件，插件的编译处理耗时会线性增加<br>而且每一个插件的transform可能都会涉及到所有class文件的遍历 时间复杂度为n<br>可以将所有的插件聚合在一起，在一个transform遍历就完成所有插件需要处理的逻辑 时间复杂度为1<br>进而达到优化插件编译耗时的目的<br><img src="https://upload-images.jianshu.io/upload_images/19741117-84db9a9d55369dcd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><br>可以理解为很多个 plugin，插在一个公共插座上<br>在公共插件的基础上集成其他feature的插件  </p>
+<h1 id="2-基于ByteX开发插件"><a href="#2-基于ByteX开发插件" class="headerlink" title="2. 基于ByteX开发插件"></a>2. 基于ByteX开发插件</h1><p>之前在上一章中，介绍了如何开发一个 gradle plugin<br>这里我们将基于 ByteX 来进行插件的开发  </p>
+<p>ByteX可以快速方便开发者开发插件：  </p>
+<ul>
+<li>配置化能力 Extension： 将build.gradle插件的配置读取到 Extension 中进行插件个性化操作  </li>
+<li>插件日志输出： 提供日志库，方便开发日志需求  </li>
+<li>开发逻辑简单，只需要在自定义插件中重写transform完成所需操作即可    </li>
+</ul>
+<p>其中开发者可以参考 ByteX 提供的 developer API 进行开发：<br><a target="_blank" rel="noopener" href="https://github.com/bytedance/ByteX/blob/master/wiki/ByteX-Developer-API-zh.md">https://github.com/bytedance/ByteX/blob/master/wiki/ByteX-Developer-API-zh.md</a><br><img src="https://upload-images.jianshu.io/upload_images/19741117-3cd4713280ba5456.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>注意TIPS：（防坑）   </p>
+<ul>
+<li>包名尽量保持一致  </li>
+<li>META-INF文件别漏  </li>
+<li>gradle.properties为groupID 和 artifactName  </li>
+<li>应用插件时候，先apply宿主再apply自定义插件  </li>
+<li>分清classpath依赖和implementation依赖的区别  </li>
+<li>如果不确定插件的执行状态可以通过打日志的方法  </li>
+<li>插件运行来但是没有得到想要的插桩结果——<strong>可能是混淆的问题，关闭混淆</strong>  </li>
+<li>ASM字节码操作部分，可以使用 intelliJ idea插件 <strong>ASM ByteCode Outline</strong> 来查看ASM代码<br><img src="https://upload-images.jianshu.io/upload_images/19741117-fc14904e07a3ed7f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></li>
+</ul>
+<h1 id="3-Method-Trace插件"><a href="#3-Method-Trace插件" class="headerlink" title="3. Method-Trace插件"></a>3. Method-Trace插件</h1><p>gradle 插件一个常用的用途用来插桩方法进行Trace<br>这样可以统计函数的运行状态，方便进行性能优化分析<br>搭配 systrace 工具 和 Perfetto 来使用  </p>
+<p>在函数出入口调用 Trace.beginSection 和 end 就可采集 Trace 数据事后使用 perfetto进行分析，效果如下<br><img src="https://upload-images.jianshu.io/upload_images/19741117-b923e27a64705ba3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>如图是插桩后 systrace 统计的图，perfetto工具查看到的效果  </p>
+<p>如果不会使用 systrace 可以查看文章<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/9dexhnWuWIopdhdU_aKkZw">https://mp.weixin.qq.com/s/9dexhnWuWIopdhdU_aKkZw</a>  </p>
+<p>这里避免 代码中手动每个函数调用 Trace.beginSection 采用字节码插桩来在 gradle plugin 中批处理添加插桩代码<br>下面是method-trace 插件的具体开发过程：  </p>
+<p>目录架构：<br><img src="https://upload-images.jianshu.io/upload_images/19741117-f10bd5b53a2f1d77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>MethodTracePlugin  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">package com.ss.android.ugc.bytex.method_trace</span><br><span class="line"></span><br><span class="line">import com.android.build.gradle.AppExtension</span><br><span class="line">import com.ss.android.ugc.bytex.common.CommonPlugin</span><br><span class="line">import com.ss.android.ugc.bytex.common.flow.main.Process</span><br><span class="line">import com.ss.android.ugc.bytex.common.visitor.ClassVisitorChain</span><br><span class="line">import com.ss.android.ugc.bytex.pluginconfig.anno.PluginConfig</span><br><span class="line">import org.gradle.api.Project</span><br><span class="line">import org.objectweb.asm.ClassReader</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@PluginConfig(&quot;bytex.method-trace&quot;)</span><br><span class="line">class MethodTracePlugin : CommonPlugin&lt;MethodTraceExtension, MethodTraceContext&gt;() &#123;</span><br><span class="line">    override fun getContext(</span><br><span class="line">            project: Project,</span><br><span class="line">            android: AppExtension,</span><br><span class="line">            extension: MethodTraceExtension</span><br><span class="line">    ): MethodTraceContext &#123;</span><br><span class="line">        return MethodTraceContext(project, android, extension)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    override fun transform(relativePath: String, chain: ClassVisitorChain): Boolean &#123;</span><br><span class="line">        chain.connect(MethodTraceClassVisitor(context, extension))</span><br><span class="line">        return super.transform(relativePath, chain)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    override fun flagForClassReader(process: Process?): Int &#123;</span><br><span class="line">        return ClassReader.SKIP_DEBUG or ClassReader.SKIP_FRAMES or ClassReader.EXPAND_FRAMES</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>MethodTraceExtension可读取如下build.gradle中配置  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; apply ByteX宿主</span><br><span class="line">apply plugin: &#39;bytex&#39;</span><br><span class="line">ByteX &#123;</span><br><span class="line">    enable pluginEnable</span><br><span class="line">    enableInDebug pluginEnableInDebug</span><br><span class="line">    logLevel pluginLogLevel</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">apply plugin: &#39;bytex.method-trace&#39;</span><br><span class="line"></span><br><span class="line">MethodTracePlugin &#123;</span><br><span class="line">    enable pluginEnable</span><br><span class="line">    enableInDebug pluginEnableInDebug</span><br><span class="line">    whiteList &#x3D; [&#39;com&#x2F;gongshijie&#39;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">package com.ss.android.ugc.bytex.method_trace;</span><br><span class="line"></span><br><span class="line">import com.ss.android.ugc.bytex.common.BaseExtension;</span><br><span class="line"></span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">public class MethodTraceExtension extends BaseExtension &#123;</span><br><span class="line"></span><br><span class="line">    private List&lt;String&gt; whiteList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return &quot;MethodTracePlugin&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public List&lt;String&gt; getWhiteList() &#123;</span><br><span class="line">        return whiteList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setWhiteList(List&lt;String&gt; whiteList) &#123;</span><br><span class="line">        this.whiteList &#x3D; whiteList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>TraceMethodVisitor  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">package com.ss.android.ugc.bytex.method_trace</span><br><span class="line"></span><br><span class="line">import org.objectweb.asm.MethodVisitor</span><br><span class="line">import org.objectweb.asm.commons.AdviceAdapter</span><br><span class="line"></span><br><span class="line">class TraceMethodVisitor(private var context: MethodTraceContext,</span><br><span class="line">                         private var className: String, api: Int, mv: MethodVisitor?,</span><br><span class="line">                         access: Int, var methodName: String?, desc: String?</span><br><span class="line">) : AdviceAdapter(api, mv, access, methodName, desc) &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    override fun onMethodEnter() &#123;</span><br><span class="line">        super.onMethodEnter()</span><br><span class="line"></span><br><span class="line">        context.logger.i(&quot;TraceMethodVisitor&quot;, &quot;----插桩----className: $className  methodName: $&#123;methodName&#125;------&quot;)</span><br><span class="line"></span><br><span class="line">        if (methodName !&#x3D; null) &#123;</span><br><span class="line">            mv.visitLdcInsn(&quot;$className#$methodName&quot;);</span><br><span class="line">            mv.visitMethodInsn(INVOKESTATIC, &quot;com&#x2F;ss&#x2F;android&#x2F;ugc&#x2F;bytex&#x2F;method_trace_lib&#x2F;MyTrace&quot;, &quot;beginSection&quot;, &quot;(Ljava&#x2F;lang&#x2F;String;)V&quot;, false);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    override fun onMethodExit(opcode: Int) &#123;</span><br><span class="line">        super.onMethodExit(opcode)</span><br><span class="line">        mv.visitMethodInsn(INVOKESTATIC, &quot;com&#x2F;ss&#x2F;android&#x2F;ugc&#x2F;bytex&#x2F;method_trace_lib&#x2F;MyTrace&quot;, &quot;endSection&quot;, &quot;()V&quot;, false);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="4-Jitpack发布"><a href="#4-Jitpack发布" class="headerlink" title="4. Jitpack发布"></a>4. Jitpack发布</h1><p>jitpack是一个代码发布平台，可以方便的将github上的代码发布到jitpack<br><img src="https://upload-images.jianshu.io/upload_images/19741117-97701520166e32ca.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>如何使用 jitpack 发布代码<br>阅读文档： <a target="_blank" rel="noopener" href="https://jitpack.io/docs/">https://jitpack.io/docs/</a><br>发布的步骤：   </p>
+<ul>
+<li>Android library 或 java library publish打包代码到本地maven  </li>
+<li>github 创建一个 release  </li>
+<li>jitpack 查看构件产物即可  </li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-6e3eadf76cc4599e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>代码发布后可以使用如下方式来开源给其他开发者使用  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> allprojects &#123;</span><br><span class="line">     repositories &#123;</span><br><span class="line">         jcenter()</span><br><span class="line">         maven &#123; url &quot;https:&#x2F;&#x2F;jitpack.io&quot; &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line">dependencies &#123;</span><br><span class="line">     classpath &quot;com.github.gongshijier.ByteX:method-trace:1.4&quot;</span><br><span class="line">&#125;</span><br><span class="line">dependencies &#123;</span><br><span class="line">     implementation &quot;com.github.gongshijier.ByteX:method-trace-lib:1.4&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里以 method-trace 这个库举例<br>发布代码<br>build.gradle  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &#39;com.github.dcendents.android-maven&#39;</span><br><span class="line">group&#x3D;&#39;com.github.gongshijier&#39;</span><br></pre></td></tr></table></figure>
+
+<p>致此，完成了插件从开发到发布的过程 ！  </p>
+<p>这些便是该插件的效果：<br><img src="https://upload-images.jianshu.io/upload_images/19741117-822c795637d1abd7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>该插件可以直接通过下面方式使用：  </p>
+<ul>
+<li><ol>
+<li>添加依赖<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">    allprojects &#123;</span><br><span class="line">        repositories &#123;</span><br><span class="line">            jcenter()</span><br><span class="line">            maven &#123; url &quot;https:&#x2F;&#x2F;jitpack.io&quot; &#125;</span><br><span class="line">        &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#x2F;&#x2F; buildscript 中的依赖</span><br><span class="line">   dependencies &#123;</span><br><span class="line">        classpath &quot;com.github.gongshijier.ByteX:method-trace:1.4&quot;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   dependencies &#123;</span><br><span class="line">        implementation &quot;com.github.gongshijier.ByteX:method-trace-lib:1.4&quot;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>使用插件  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; apply ByteX宿主</span><br><span class="line">apply plugin: &#39;bytex&#39;</span><br><span class="line">ByteX &#123;</span><br><span class="line">    enable pluginEnable</span><br><span class="line">    enableInDebug pluginEnableInDebug</span><br><span class="line">    logLevel pluginLogLevel</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">apply plugin: &#39;bytex.method-trace&#39;</span><br><span class="line"></span><br><span class="line">MethodTracePlugin &#123;</span><br><span class="line">    enable pluginEnable</span><br><span class="line">    enableInDebug pluginEnableInDebug</span><br><span class="line">    whiteList &#x3D; [&#39;com&#x2F;gongshijie&#39;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="龚世杰 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+  <div class="followme">
+    <p>微信扫码关注公众号，追踪更多博文</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/images/wechat_channel.jpg">
+            <span class="icon">
+              <i class="fab fa-weixin"></i>
+            </span>
+
+            <span class="label">WeChat</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/18/Android%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BAGradle%E4%B8%93%E6%A0%8F%E2%80%94%E2%80%94gradle-plugin/" rel="prev" title="Android项目构建Gradle专栏——gradle plugin">
+      <i class="fa fa-chevron-left"></i> Android项目构建Gradle专栏——gradle plugin
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-ByteX%E4%BB%8B%E7%BB%8D"><span class="nav-text">1. ByteX介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%9F%BA%E4%BA%8EByteX%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6"><span class="nav-text">2. 基于ByteX开发插件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Method-Trace%E6%8F%92%E4%BB%B6"><span class="nav-text">3. Method-Trace插件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Jitpack%E5%8F%91%E5%B8%83"><span class="nav-text">4. Jitpack发布</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="龚世杰"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">龚世杰</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">博文</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">专栏</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gongshijier" title="github → https:&#x2F;&#x2F;github.com&#x2F;gongshijier" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>github</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/jiao-zhu-42-77" title="知乎 → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;jiao-zhu-42-77" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://upload-images.jianshu.io/upload_images/19741117-0be99c3943e8dfd4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" title="微信 → https:&#x2F;&#x2F;upload-images.jianshu.io&#x2F;upload_images&#x2F;19741117-0be99c3943e8dfd4.png?imageMogr2&#x2F;auto-orient&#x2F;strip%7CimageView2&#x2F;2&#x2F;w&#x2F;1240" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>微信</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">龚世杰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
