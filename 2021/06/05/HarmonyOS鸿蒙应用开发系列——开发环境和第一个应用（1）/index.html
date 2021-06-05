@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+<meta name="google-site-verification" content="Fhhhr12IuMEKjzZ0EyR0N0OzrzXxnZxtyrfTudM39vc" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"gongshijier.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="公众号地址： https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;yHR09eNyTVTFT7fZasOTMg">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HarmonyOS鸿蒙应用开发系列——开发环境和第一个应用（1）">
+<meta property="og:url" content="https://gongshijier.github.io/2021/06/05/HarmonyOS%E9%B8%BF%E8%92%99%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E2%80%94%E2%80%94%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E5%92%8C%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%BA%94%E7%94%A8%EF%BC%881%EF%BC%89/index.html">
+<meta property="og:site_name" content="Code A Better Life">
+<meta property="og:description" content="公众号地址： https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;yHR09eNyTVTFT7fZasOTMg">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-55d15b1abe458c45.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-40b4c47094c9b399.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-98bdb8835d9b6bd1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-09379101b849c917.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-e585711839cd694a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-3e19c6a354d7cbe5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-9c213f39579f13ef.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-926c7b3e00a259f2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-de35c12f0627ec91.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-ad6cad299cda6ab8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2021-06-05T03:56:26.000Z">
+<meta property="article:modified_time" content="2021-06-05T04:01:41.828Z">
+<meta property="article:author" content="龚世杰">
+<meta property="article:tag" content="android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/19741117-55d15b1abe458c45.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+<link rel="canonical" href="https://gongshijier.github.io/2021/06/05/HarmonyOS%E9%B8%BF%E8%92%99%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E2%80%94%E2%80%94%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E5%92%8C%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%BA%94%E7%94%A8%EF%BC%881%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>HarmonyOS鸿蒙应用开发系列——开发环境和第一个应用（1） | Code A Better Life</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Code A Better Life</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>专栏</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>博文</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gongshijier.github.io/2021/06/05/HarmonyOS%E9%B8%BF%E8%92%99%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E2%80%94%E2%80%94%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E5%92%8C%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%BA%94%E7%94%A8%EF%BC%881%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="龚世杰">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Code A Better Life">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          HarmonyOS鸿蒙应用开发系列——开发环境和第一个应用（1）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-06-05 11:56:26 / 修改时间：12:01:41" itemprop="dateCreated datePublished" datetime="2021-06-05T11:56:26+08:00">2021-06-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">收录于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/HarmonyOS/" itemprop="url" rel="index"><span itemprop="name">HarmonyOS</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <meta name="referrer" content="no-referrer" />
+
+<p>公众号地址： <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/yHR09eNyTVTFT7fZasOTMg">https://mp.weixin.qq.com/s/yHR09eNyTVTFT7fZasOTMg</a></p>
+<hr>
+<span id="more"></span>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-55d15b1abe458c45.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h1 id="1-开发环境"><a href="#1-开发环境" class="headerlink" title="1. 开发环境"></a>1. 开发环境</h1><p>IDE下载地址：<br><a target="_blank" rel="noopener" href="https://developer.harmonyos.com/cn/develop/deveco-studio#download">https://developer.harmonyos.com/cn/develop/deveco-studio#download</a><br>HarmonyOS 开发者API：<br><a target="_blank" rel="noopener" href="https://developer.harmonyos.com/cn/docs/documentation/doc-guides/codelabs-0000001141821381">https://developer.harmonyos.com/cn/docs/documentation/doc-guides/codelabs-0000001141821381</a></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-40b4c47094c9b399.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>使用模拟器调试应用步骤： </p>
+<p>使用IDE需要实名认证登陆华为账号  </p>
+<ul>
+<li><ol>
+<li>在网站中增加设备：<a target="_blank" rel="noopener" href="https://cn.devecostudio.huawei.com/console/testservice/simulator">https://cn.devecostudio.huawei.com/console/testservice/simulator</a><br><img src="https://upload-images.jianshu.io/upload_images/19741117-98bdb8835d9b6bd1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="模拟器"></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>在tools的device manager 中选择设备开始调试<br><img src="https://upload-images.jianshu.io/upload_images/19741117-09379101b849c917.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><br><img src="https://upload-images.jianshu.io/upload_images/19741117-e585711839cd694a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="运行效果"></li>
+</ol>
+</li>
+</ul>
+<h1 id="2-目录结构"><a href="#2-目录结构" class="headerlink" title="2. 目录结构"></a>2. 目录结构</h1><p>API文档：<br><a target="_blank" rel="noopener" href="https://developer.harmonyos.com/cn/docs/documentation/doc-guides/project_overview-0000001053822398">https://developer.harmonyos.com/cn/docs/documentation/doc-guides/project_overview-0000001053822398</a><br>详细介绍了HarmonyOS的目录架构，以及各个文件的角色作用  </p>
+<p>和 Android app 的组织结构类似，HarmonyOS应用——APP Pack（Application Package），是由一个或多个<br>HAP（HarmonyOS Ability Package）包以及描述APP Pack属性的pack.info文件组成。<br><img src="https://upload-images.jianshu.io/upload_images/19741117-3e19c6a354d7cbe5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>HAP是Ability的部署包。  </p>
+<p><strong>HarmonyOS应用代码围绕Ability组件展开，它是由一个或多个Ability组成。</strong>    </p>
+<p>Ability分为两种类型：FA（Feature Ability元程序有UI界面）和PA（Particle Ability元服务无UI界面）。  </p>
+<p>FA/PA是应用的基本组成单元，能够实现特定的业务功能。  </p>
+<p>应用都是由Ability组成的，每一个页面都对应一个Ability。  </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-9c213f39579f13ef.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-926c7b3e00a259f2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Ability类型"></p>
+<p>开发HarmonyOS应用有Java和Js两类工程可以选择：  </p>
+<ul>
+<li><ol>
+<li>Java工程  </li>
+</ol>
+</li>
+<li><ol start="2">
+<li>Js工程  </li>
+</ol>
+</li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-de35c12f0627ec91.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="HarmonyOS应用——Java工程"><br><img src="https://upload-images.jianshu.io/upload_images/19741117-ad6cad299cda6ab8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="HarmonyOS应用——Js工程"></p>
+<p>华为的API文档都很详细，对开发者很友好，鸿蒙系统未来可期。  </p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="龚世杰 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+  <div class="followme">
+    <p>微信扫码关注公众号，追踪更多博文</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/images/wechat_channel.jpg">
+            <span class="icon">
+              <i class="fab fa-weixin"></i>
+            </span>
+
+            <span class="label">WeChat</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/21/Android%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BAGradle%E4%B8%93%E6%A0%8F%E2%80%94%E2%80%94Bytex%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/" rel="prev" title="Android项目构建Gradle专栏——Bytex插件开发实战">
+      <i class="fa fa-chevron-left"></i> Android项目构建Gradle专栏——Bytex插件开发实战
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83"><span class="nav-text">1. 开发环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-text">2. 目录结构</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="龚世杰"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">龚世杰</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">博文</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">专栏</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gongshijier" title="github → https:&#x2F;&#x2F;github.com&#x2F;gongshijier" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>github</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/jiao-zhu-42-77" title="知乎 → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;jiao-zhu-42-77" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://upload-images.jianshu.io/upload_images/19741117-0be99c3943e8dfd4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" title="微信 → https:&#x2F;&#x2F;upload-images.jianshu.io&#x2F;upload_images&#x2F;19741117-0be99c3943e8dfd4.png?imageMogr2&#x2F;auto-orient&#x2F;strip%7CimageView2&#x2F;2&#x2F;w&#x2F;1240" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>微信</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">龚世杰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
