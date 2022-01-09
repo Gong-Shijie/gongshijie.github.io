@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+<meta name="google-site-verification" content="Fhhhr12IuMEKjzZ0EyR0N0OzrzXxnZxtyrfTudM39vc" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"gongshijier.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="公众号地址： https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;GIsLHvJHMd7cZlJE87LKNg">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 系统运行机制 【Looper】【Choreographer】篇">
+<meta property="og:url" content="https://gongshijier.github.io/2022/01/09/Android-%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6-%E3%80%90Looper%E3%80%91%E3%80%90Choreographer%E3%80%91%E7%AF%87/index.html">
+<meta property="og:site_name" content="Code A Better Life">
+<meta property="og:description" content="公众号地址： https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;GIsLHvJHMd7cZlJE87LKNg">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-1e08f2750917d3c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-29152a9e4e293d9d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-0d0fd867773daebd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-9103da62482b00f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-0c237c43fb86d551.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-cde36fcf9f87837e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-56b8700b67cc6c56.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-56b8700b67cc6c56.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-464e32cbefa1280d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-8c1ee12247759a12.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-f20bd98cbd46fd83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-84e9489d225ebea2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-cde36fcf9f87837e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/19741117-6b692686450700cd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2022-01-09T13:56:01.000Z">
+<meta property="article:modified_time" content="2022-01-09T13:57:52.238Z">
+<meta property="article:author" content="龚世杰">
+<meta property="article:tag" content="android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/19741117-1e08f2750917d3c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+<link rel="canonical" href="https://gongshijier.github.io/2022/01/09/Android-%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6-%E3%80%90Looper%E3%80%91%E3%80%90Choreographer%E3%80%91%E7%AF%87/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android 系统运行机制 【Looper】【Choreographer】篇 | Code A Better Life</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Code A Better Life</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>专栏</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>博文</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gongshijier.github.io/2022/01/09/Android-%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6-%E3%80%90Looper%E3%80%91%E3%80%90Choreographer%E3%80%91%E7%AF%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="龚世杰">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Code A Better Life">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android 系统运行机制 【Looper】【Choreographer】篇
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-01-09 21:56:01 / 修改时间：21:57:52" itemprop="dateCreated datePublished" datetime="2022-01-09T21:56:01+08:00">2022-01-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">收录于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">系统</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <meta name="referrer" content="no-referrer" />
+
+<p>公众号地址： <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/GIsLHvJHMd7cZlJE87LKNg">https://mp.weixin.qq.com/s/GIsLHvJHMd7cZlJE87LKNg</a></p>
+<hr>
+<span id="more"></span>
+
+<p>目录：<br>1 MessageQueue next()<br>2 Vsync  <br>3 Choreographer doFrame<br>4 input </p>
+<hr>
+<p>系统是一个无限循环的模型， Android也不例外，进程被创建后就陷入了无限循环的状态</p>
+<p>系统运行最重要的两个概念：输入，输出。</p>
+<ul>
+<li>输入： 按键事件、触摸事件、鼠标事件、轨迹球事件</li>
+<li>输出： Choreographer 如何指挥完成一帧的绘制</li>
+</ul>
+<p>Android 中输入 输出 的往复循环都是在 looper 中消息机制驱动下完成的  </p>
+<p>looper 的循环中， messageQueue next 取消息进行处理， 处理输入事件， 进行输出， 完成和用户交互</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-1e08f2750917d3c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="主线程"></p>
+<p>应用生命周期内会不断 产生 message 到 messageQueue 中， 有： java层 也有 native层  </p>
+<p>其中最核心的方法就是 messageQueue 的 next 方法， 其中会先处理 java 层消息， 当 java 层没有消息时候， 会执行 nativePollOnce 来处理 native 的消息 以及监听 fd 各种事件</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-29152a9e4e293d9d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>从硬件来看， 屏幕不会一直刷新， 屏幕的刷新只需要符合人眼的视觉停留机制  </p>
+<p>24Hz ， 连续刷新每一帧， 人眼就会认为画面是流畅的  </p>
+<p>所以我们只需要配合上这个频率， 在需要更新 UI 的时候执行绘制操作</p>
+<p>如何以这个频率进行绘制每一帧： Android 的方案是 Vsync 信号驱动。</p>
+<p>Vsync 信号的频率就是 24Hz ， 也就是每隔 16.6667 ms 发送一次 Vsync 信号提示系统合成一帧。</p>
+<p>监听屏幕刷新来发送 Vsync 信号的能力，应用层 是做不到的， 系统是通过 jni 回调到 Choreographer 中的 Vsync 监听， 将这个重要信号从 native 传递到 java 层。</p>
+<p>总体来说 <strong>输入事件获取</strong>  <strong>Vsync信号获取</strong>  都是先由 native 捕获事件 然后 jni 到 java 层实现业务逻辑  </p>
+<p>执行的是 messageQueue 中的关键方法： next  </p>
+<hr>
+<h2 id="1-MessageQueue-next"><a href="#1-MessageQueue-next" class="headerlink" title="1 MessageQueue next()"></a>1 MessageQueue next()</h2><p>next 主要的逻辑分为： java 部分 和 native 部分  </p>
+<p>java 上主要是取java层的 messageQueue msg 执行， 无 msg 就 idleHandler  </p>
+<p>java层 无 msg 会执行 native 的 pollOnce@Looper </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-0d0fd867773daebd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="next@MessageQueue"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-9103da62482b00f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="native message"></p>
+<p>native looper 中 fd 监听封装为 requestQueue， epoll_wait 将 fd 中的事件和对应 request 封装为 response 处理， 处理的时候会调用 fd 对应的 callback 的 handleEvent  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Waits for events to be available, with optional timeout in milliseconds.</span><br><span class="line"> * Invokes callbacks for all file descriptors on which an event occurred.</span><br><span class="line"> *</span><br><span class="line"> * If the timeout is zero, returns immediately without blocking.</span><br><span class="line"> * If the timeout is negative, waits indefinitely until an event appears.</span><br><span class="line"> *</span><br><span class="line"> * Returns POLL_WAKE if the poll was awoken using wake() before</span><br><span class="line"> * the timeout expired and no callbacks were invoked and no other file</span><br><span class="line"> * descriptors were ready.</span><br><span class="line"> *</span><br><span class="line"> * Returns POLL_CALLBACK if one or more callbacks were invoked.</span><br><span class="line"> *</span><br><span class="line"> * Returns POLL_TIMEOUT if there was no data before the given</span><br><span class="line"> * timeout expired.</span><br><span class="line"> *</span><br><span class="line"> * Returns POLL_ERROR if an error occurred.</span><br><span class="line"> *</span><br><span class="line"> * Returns a value &gt;&#x3D; 0 containing an identifier if its file descriptor has data</span><br><span class="line"> * and it has no callback function (requiring the caller here to handle it).</span><br><span class="line"> * In this (and only this) case outFd, outEvents and outData will contain the poll</span><br><span class="line"> * events and data associated with the fd, otherwise they will be set to NULL.</span><br><span class="line"> *</span><br><span class="line"> * This method does not return until it has finished invoking the appropriate callbacks</span><br><span class="line"> * for all file descriptors that were signalled.</span><br><span class="line"> *&#x2F;</span><br><span class="line">int pollOnce(int timeoutMillis, int* outFd, int* outEvents, void** outData);</span><br></pre></td></tr></table></figure>
+
+<p>native 层 pollOnce 主要做的事情是： </p>
+<ul>
+<li>epoll_wait 监听 fd 封装为 response</li>
+<li>处理所有 native message </li>
+<li>处理 response 回调 handleEvent ，handleEvent 很多回回调到 java 层</li>
+</ul>
+<p>vsync 信号，输入事件， 都是通过这样的机制完成的。  </p>
+<hr>
+<h2 id="2-vsync"><a href="#2-vsync" class="headerlink" title="2 vsync"></a>2 vsync</h2><p>epoll_wait 机制 拿到的 event ， 都在 response pollOnce  pollInner 处理了  </p>
+<p>这里的  dispatchVsync 从 native 回到 java 层 </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-0c237c43fb86d551.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>native： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">int DisplayEventDispatcher::handleEvent(int, int events, void*) &#123;</span><br><span class="line">    if (events &amp; (Looper::EVENT_ERROR | Looper::EVENT_HANGUP)) &#123;</span><br><span class="line">        ALOGE(&quot;Display event receiver pipe was closed or an error occurred.  &quot;</span><br><span class="line">              &quot;events&#x3D;0x%x&quot;,</span><br><span class="line">              events);</span><br><span class="line">        return 0; &#x2F;&#x2F; remove the callback</span><br><span class="line">    &#125;</span><br><span class="line">......</span><br><span class="line">        dispatchVsync(vsyncTimestamp, vsyncDisplayId, vsyncCount, vsyncEventData);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>java：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Called from native code.</span><br><span class="line">@SuppressWarnings(&quot;unused&quot;)</span><br><span class="line">@UnsupportedAppUsage</span><br><span class="line">private void dispatchVsync(long timestampNanos, long physicalDisplayId, int frame) &#123;</span><br><span class="line">    onVsync(timestampNanos, physicalDisplayId, frame);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">private final class FrameDisplayEventReceiver extends DisplayEventReceiver</span><br><span class="line">        implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onVsync(long timestampNanos, long physicalDisplayId, int frame) &#123;</span><br><span class="line">    </span><br><span class="line">        mTimestampNanos &#x3D; timestampNanos;</span><br><span class="line">        mFrame &#x3D; frame;</span><br><span class="line">        Message msg &#x3D; Message.obtain(mHandler, this);</span><br><span class="line">        msg.setAsynchronous(true);</span><br><span class="line">        mHandler.sendMessageAtTime(msg, timestampNanos &#x2F; TimeUtils.NANOS_PER_MS);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        mHavePendingVsync &#x3D; false;</span><br><span class="line">        doFrame(mTimestampNanos, mFrame);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>收到 Vsync 信号后， Choreographer 执行 doFrame </p>
+<p>应用层重要的工作几乎都在 doFrame 中  </p>
+<hr>
+<h2 id="3-Choreographer-doFrame"><a href="#3-Choreographer-doFrame" class="headerlink" title="3 Choreographer doFrame"></a>3 Choreographer doFrame</h2><p>首先看下 doFrame 执行了什么： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    Trace.traceBegin(Trace.TRACE_TAG_VIEW, &quot;Choreographer#doFrame&quot;);</span><br><span class="line">    AnimationUtils.lockAnimationClock(frameTimeNanos &#x2F; TimeUtils.NANOS_PER_MS);</span><br><span class="line"></span><br><span class="line">    mFrameInfo.markInputHandlingStart();</span><br><span class="line">    doCallbacks(Choreographer.CALLBACK_INPUT, frameTimeNanos);</span><br><span class="line"></span><br><span class="line">    mFrameInfo.markAnimationsStart();</span><br><span class="line">    doCallbacks(Choreographer.CALLBACK_ANIMATION, frameTimeNanos);</span><br><span class="line">    doCallbacks(Choreographer.CALLBACK_INSETS_ANIMATION, frameTimeNanos);</span><br><span class="line"></span><br><span class="line">    mFrameInfo.markPerformTraversalsStart();</span><br><span class="line">    doCallbacks(Choreographer.CALLBACK_TRAVERSAL, frameTimeNanos);</span><br><span class="line"></span><br><span class="line">    doCallbacks(Choreographer.CALLBACK_COMMIT, frameTimeNanos);</span><br><span class="line">&#125; finally &#123;</span><br><span class="line">    AnimationUtils.unlockAnimationClock();</span><br><span class="line">    Trace.traceEnd(Trace.TRACE_TAG_VIEW);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>UI 线程的核心工作就在这几个方法中： </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-cde36fcf9f87837e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>上述执行 callback 的过程就对应了图片中 依次处理 input animation traversal 这几个关键过程</p>
+<p>执行的周期是 16.6ms， 实际可能因为一些 delay 造成一些延迟、丢帧</p>
+<hr>
+<h2 id="4-input"><a href="#4-input" class="headerlink" title="4 input"></a>4 input</h2><p>input 事件的整体逻辑和 vsync 类似  </p>
+<p>native handleEvent ，在 NativeInputEventReceiver 中处理事件， 区分不同事件会通过 JNI</p>
+<p>走到 java 层，WindowInputEventReceiver 然后进行分发消费</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-56b8700b67cc6c56.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>native : </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">int NativeInputEventReceiver::handleEvent(int receiveFd, int events, void* data) &#123;</span><br><span class="line">    &#x2F;&#x2F; Allowed return values of this function as documented in LooperCallback::handleEvent</span><br><span class="line">    constexpr int REMOVE_CALLBACK &#x3D; 0;</span><br><span class="line">    constexpr int KEEP_CALLBACK &#x3D; 1;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    if (events &amp; ALOOPER_EVENT_INPUT) &#123;</span><br><span class="line">        JNIEnv* env &#x3D; AndroidRuntime::getJNIEnv();</span><br><span class="line">        status_t status &#x3D; consumeEvents(env, false &#x2F;*consumeBatches*&#x2F;, -1, nullptr);</span><br><span class="line">        mMessageQueue-&gt;raiseAndClearException(env, &quot;handleReceiveCallback&quot;);</span><br><span class="line">        return status &#x3D;&#x3D; OK || status &#x3D;&#x3D; NO_MEMORY ? KEEP_CALLBACK : REMOVE_CALLBACK;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">status_t NativeInputEventReceiver::consumeEvents(JNIEnv* env,</span><br><span class="line">        bool consumeBatches, nsecs_t frameTime, bool* outConsumedBatch) &#123;</span><br><span class="line"> </span><br><span class="line">    for (;;) &#123;</span><br><span class="line">        uint32_t seq;</span><br><span class="line">        InputEvent* inputEvent;</span><br><span class="line"></span><br><span class="line">        status_t status &#x3D; mInputConsumer.consume(&amp;mInputEventFactory,</span><br><span class="line">                consumeBatches, frameTime, &amp;seq, &amp;inputEvent);</span><br><span class="line">        if (status !&#x3D; OK &amp;&amp; status !&#x3D; WOULD_BLOCK) &#123;</span><br><span class="line">            ALOGE(&quot;channel &#39;%s&#39; ~ Failed to consume input event.  status&#x3D;%s(%d)&quot;,</span><br><span class="line">                  getInputChannelName().c_str(), statusToString(status).c_str(), status);</span><br><span class="line">            return status;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (status &#x3D;&#x3D; WOULD_BLOCK) &#123;</span><br><span class="line">            if (!skipCallbacks &amp;&amp; !mBatchedInputEventPending &amp;&amp; mInputConsumer.hasPendingBatch()) &#123;</span><br><span class="line">                &#x2F;&#x2F; There is a pending batch.  Come back later.</span><br><span class="line">                if (!receiverObj.get()) &#123;</span><br><span class="line">                    receiverObj.reset(jniGetReferent(env, mReceiverWeakGlobal));</span><br><span class="line">                    if (!receiverObj.get()) &#123;</span><br><span class="line">                        ALOGW(&quot;channel &#39;%s&#39; ~ Receiver object was finalized &quot;</span><br><span class="line">                              &quot;without being disposed.&quot;,</span><br><span class="line">                              getInputChannelName().c_str());</span><br><span class="line">                        return DEAD_OBJECT;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                mBatchedInputEventPending &#x3D; true;</span><br><span class="line">                if (kDebugDispatchCycle) &#123;</span><br><span class="line">                    ALOGD(&quot;channel &#39;%s&#39; ~ Dispatching batched input event pending notification.&quot;,</span><br><span class="line">                          getInputChannelName().c_str());</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                env-&gt;CallVoidMethod(receiverObj.get(),</span><br><span class="line">                                    gInputEventReceiverClassInfo.onBatchedInputEventPending,</span><br><span class="line">                                    mInputConsumer.getPendingBatchSource());</span><br><span class="line">                if (env-&gt;ExceptionCheck()) &#123;</span><br><span class="line">                    ALOGE(&quot;Exception dispatching batched input events.&quot;);</span><br><span class="line">                    mBatchedInputEventPending &#x3D; false; &#x2F;&#x2F; try again later</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            return OK;</span><br><span class="line">        &#125;</span><br><span class="line">        assert(inputEvent);</span><br><span class="line"></span><br><span class="line">        if (!skipCallbacks) &#123;</span><br><span class="line">            if (!receiverObj.get()) &#123;</span><br><span class="line">                receiverObj.reset(jniGetReferent(env, mReceiverWeakGlobal));</span><br><span class="line">                if (!receiverObj.get()) &#123;</span><br><span class="line">                    ALOGW(&quot;channel &#39;%s&#39; ~ Receiver object was finalized &quot;</span><br><span class="line">                            &quot;without being disposed.&quot;, getInputChannelName().c_str());</span><br><span class="line">                    return DEAD_OBJECT;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            jobject inputEventObj;</span><br><span class="line">            switch (inputEvent-&gt;getType()) &#123;</span><br><span class="line">            case AINPUT_EVENT_TYPE_KEY:</span><br><span class="line">                if (kDebugDispatchCycle) &#123;</span><br><span class="line">                    ALOGD(&quot;channel &#39;%s&#39; ~ Received key event.&quot;, getInputChannelName().c_str());</span><br><span class="line">                &#125;</span><br><span class="line">                inputEventObj &#x3D; android_view_KeyEvent_fromNative(env,</span><br><span class="line">                        static_cast&lt;KeyEvent*&gt;(inputEvent));</span><br><span class="line">                break;</span><br><span class="line"></span><br><span class="line">            case AINPUT_EVENT_TYPE_MOTION: &#123;</span><br><span class="line">                if (kDebugDispatchCycle) &#123;</span><br><span class="line">                    ALOGD(&quot;channel &#39;%s&#39; ~ Received motion event.&quot;, getInputChannelName().c_str());</span><br><span class="line">                &#125;</span><br><span class="line">                MotionEvent* motionEvent &#x3D; static_cast&lt;MotionEvent*&gt;(inputEvent);</span><br><span class="line">                if ((motionEvent-&gt;getAction() &amp; AMOTION_EVENT_ACTION_MOVE) &amp;&amp; outConsumedBatch) &#123;</span><br><span class="line">                    *outConsumedBatch &#x3D; true;</span><br><span class="line">                &#125;</span><br><span class="line">                inputEventObj &#x3D; android_view_MotionEvent_obtainAsCopy(env, motionEvent);</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">            case AINPUT_EVENT_TYPE_FOCUS: &#123;</span><br><span class="line">                FocusEvent* focusEvent &#x3D; static_cast&lt;FocusEvent*&gt;(inputEvent);</span><br><span class="line">                if (kDebugDispatchCycle) &#123;</span><br><span class="line">                    ALOGD(&quot;channel &#39;%s&#39; ~ Received focus event: hasFocus&#x3D;%s, inTouchMode&#x3D;%s.&quot;,</span><br><span class="line">                          getInputChannelName().c_str(), toString(focusEvent-&gt;getHasFocus()),</span><br><span class="line">                          toString(focusEvent-&gt;getInTouchMode()));</span><br><span class="line">                &#125;</span><br><span class="line">                env-&gt;CallVoidMethod(receiverObj.get(), gInputEventReceiverClassInfo.onFocusEvent,</span><br><span class="line">                                    jboolean(focusEvent-&gt;getHasFocus()),</span><br><span class="line">                                    jboolean(focusEvent-&gt;getInTouchMode()));</span><br><span class="line">                finishInputEvent(seq, true &#x2F;* handled *&#x2F;);</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line">            case AINPUT_EVENT_TYPE_CAPTURE: &#123;</span><br><span class="line">                const CaptureEvent* captureEvent &#x3D; static_cast&lt;CaptureEvent*&gt;(inputEvent);</span><br><span class="line">                if (kDebugDispatchCycle) &#123;</span><br><span class="line">                    ALOGD(&quot;channel &#39;%s&#39; ~ Received capture event: pointerCaptureEnabled&#x3D;%s&quot;,</span><br><span class="line">                          getInputChannelName().c_str(),</span><br><span class="line">                          toString(captureEvent-&gt;getPointerCaptureEnabled()));</span><br><span class="line">                &#125;</span><br><span class="line">                env-&gt;CallVoidMethod(receiverObj.get(),</span><br><span class="line">                                    gInputEventReceiverClassInfo.onPointerCaptureEvent,</span><br><span class="line">                                    jboolean(captureEvent-&gt;getPointerCaptureEnabled()));</span><br><span class="line">                finishInputEvent(seq, true &#x2F;* handled *&#x2F;);</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line">            case AINPUT_EVENT_TYPE_DRAG: &#123;</span><br><span class="line">                const DragEvent* dragEvent &#x3D; static_cast&lt;DragEvent*&gt;(inputEvent);</span><br><span class="line">                if (kDebugDispatchCycle) &#123;</span><br><span class="line">                    ALOGD(&quot;channel &#39;%s&#39; ~ Received drag event: isExiting&#x3D;%s&quot;,</span><br><span class="line">                          getInputChannelName().c_str(), toString(dragEvent-&gt;isExiting()));</span><br><span class="line">                &#125;</span><br><span class="line">                env-&gt;CallVoidMethod(receiverObj.get(), gInputEventReceiverClassInfo.onDragEvent,</span><br><span class="line">                                    jboolean(dragEvent-&gt;isExiting()), dragEvent-&gt;getX(),</span><br><span class="line">                                    dragEvent-&gt;getY());</span><br><span class="line">                finishInputEvent(seq, true &#x2F;* handled *&#x2F;);</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            default:</span><br><span class="line">                assert(false); &#x2F;&#x2F; InputConsumer should prevent this from ever happening</span><br><span class="line">                inputEventObj &#x3D; nullptr;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (inputEventObj) &#123;</span><br><span class="line">                if (kDebugDispatchCycle) &#123;</span><br><span class="line">                    ALOGD(&quot;channel &#39;%s&#39; ~ Dispatching input event.&quot;, getInputChannelName().c_str());</span><br><span class="line">                &#125;</span><br><span class="line">                env-&gt;CallVoidMethod(receiverObj.get(),</span><br><span class="line">                        gInputEventReceiverClassInfo.dispatchInputEvent, seq, inputEventObj);</span><br><span class="line">                if (env-&gt;ExceptionCheck()) &#123;</span><br><span class="line">                    ALOGE(&quot;Exception dispatching input event.&quot;);</span><br><span class="line">                    skipCallbacks &#x3D; true;</span><br><span class="line">                &#125;</span><br><span class="line">                env-&gt;DeleteLocalRef(inputEventObj);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                ALOGW(&quot;channel &#39;%s&#39; ~ Failed to obtain event object.&quot;,</span><br><span class="line">                        getInputChannelName().c_str());</span><br><span class="line">                skipCallbacks &#x3D; true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>java:  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">final class WindowInputEventReceiver extends InputEventReceiver &#123;</span><br><span class="line">    public WindowInputEventReceiver(InputChannel inputChannel, Looper looper) &#123;</span><br><span class="line">        super(inputChannel, looper);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onInputEvent(InputEvent event) &#123;</span><br><span class="line">        Trace.traceBegin(Trace.TRACE_TAG_VIEW, &quot;processInputEventForCompatibility&quot;);</span><br><span class="line">        List&lt;InputEvent&gt; processedEvents;</span><br><span class="line">        try &#123;</span><br><span class="line">            processedEvents &#x3D;</span><br><span class="line">                mInputCompatProcessor.processInputEventForCompatibility(event);</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            Trace.traceEnd(Trace.TRACE_TAG_VIEW);</span><br><span class="line">        &#125;</span><br><span class="line">        if (processedEvents !&#x3D; null) &#123;</span><br><span class="line">            if (processedEvents.isEmpty()) &#123;</span><br><span class="line">                &#x2F;&#x2F; InputEvent consumed by mInputCompatProcessor</span><br><span class="line">                finishInputEvent(event, true);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                for (int i &#x3D; 0; i &lt; processedEvents.size(); i++) &#123;</span><br><span class="line">                    enqueueInputEvent(</span><br><span class="line">                            processedEvents.get(i), this,</span><br><span class="line">                            QueuedInputEvent.FLAG_MODIFIED_FOR_COMPATIBILITY, true);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            enqueueInputEvent(event, this, 0, true);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onBatchedInputEventPending(int source) &#123;</span><br><span class="line">        &#x2F;&#x2F; mStopped: There will be no more choreographer callbacks if we are stopped,</span><br><span class="line">        &#x2F;&#x2F; so we must consume all input immediately to prevent ANR</span><br><span class="line">        final boolean unbuffered &#x3D; mUnbufferedInputDispatch</span><br><span class="line">                || (source &amp; mUnbufferedInputSource) !&#x3D; SOURCE_CLASS_NONE</span><br><span class="line">                || mStopped;</span><br><span class="line">        if (unbuffered) &#123;</span><br><span class="line">            if (mConsumeBatchedInputScheduled) &#123;</span><br><span class="line">                unscheduleConsumeBatchedInput();</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F; Consume event immediately if unbuffered input dispatch has been requested.</span><br><span class="line">            consumeBatchedInputEvents(-1);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        scheduleConsumeBatchedInput();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onFocusEvent(boolean hasFocus, boolean inTouchMode) &#123;</span><br><span class="line">        windowFocusChanged(hasFocus, inTouchMode);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void dispose() &#123;</span><br><span class="line">        unscheduleConsumeBatchedInput();</span><br><span class="line">        super.dispose();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>input事件的处理流程： </p>
+<p>输入event deliverInputEvent  </p>
+<p>deliver的 input 事件会来到 InputStage </p>
+<p>InputStage 是一个责任链， 会分发消费这些 InputEvent  </p>
+<p>下面以滑动一下 recyclerView 为例子， 整体逻辑如下： </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-56b8700b67cc6c56.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="native post input callback"></p>
+<p>vsync 信号到来， 执行 doFrame，执行到 input 阶段<br><img src="https://upload-images.jianshu.io/upload_images/19741117-464e32cbefa1280d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="do input callback"></p>
+<p>touchEvent 消费， recyclerView layout 一些 ViewHolder </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-8c1ee12247759a12.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="onbindViewHolder"></p>
+<p>scroll 中 fill 结束，会执行 一个 recyclerView viewProperty 变化， 触发了invalidate  </p>
+<p>invalidate 会走硬件加速， 一直到达 ViewRootImpl ， 从而将 Traversal 的 callback post choreographer执行到 traversal 阶段就会执行</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-f20bd98cbd46fd83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="滚动 schduleTraversals"></p>
+<p>ViewRootImpl 执行 performTraversal ， 会根据目前是否需要重新layout ， 然后执行layout， draw 等流程  </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-84e9489d225ebea2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Traversal"></p>
+<p>整个 input 到 traversal 结束，硬件绘制后， sync 任务到 GPU ， 然后合成一帧。  </p>
+<p>交给 SurfaceFlinger 来显示。  </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-cde36fcf9f87837e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>SurfaceFlinger 是系统进程， 每一个应用进程是一个 client 端， 通过 IPC 机制，client 将图像显示工作交给 SurfaceFlinger</p>
+<p>launch 一个 app： </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/19741117-6b692686450700cd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="龚世杰 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+  <div class="followme">
+    <p>微信扫码关注公众号，追踪更多博文</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/images/wechat_channel.jpg">
+            <span class="icon">
+              <i class="fab fa-weixin"></i>
+            </span>
+
+            <span class="label">WeChat</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/28/%E4%BA%BA%E7%94%9F%E8%B7%AF%E4%B8%8A%E7%9A%84%E4%B8%89%E8%BE%86%E9%A9%AC%E8%BD%A6%EF%BC%9A%E8%BF%90%E5%8A%A8%E3%80%81%E9%A5%AE%E9%A3%9F%E3%80%81%E7%9D%A1%E7%9C%A0/" rel="prev" title="人生路上的三辆马车：运动、饮食、睡眠">
+      <i class="fa fa-chevron-left"></i> 人生路上的三辆马车：运动、饮食、睡眠
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-MessageQueue-next"><span class="nav-text">1 MessageQueue next()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-vsync"><span class="nav-text">2 vsync</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Choreographer-doFrame"><span class="nav-text">3 Choreographer doFrame</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-input"><span class="nav-text">4 input</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="龚世杰"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">龚世杰</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">博文</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">专栏</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gongshijier" title="github → https:&#x2F;&#x2F;github.com&#x2F;gongshijier" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>github</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/jiao-zhu-42-77" title="知乎 → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;jiao-zhu-42-77" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://upload-images.jianshu.io/upload_images/19741117-0be99c3943e8dfd4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" title="微信 → https:&#x2F;&#x2F;upload-images.jianshu.io&#x2F;upload_images&#x2F;19741117-0be99c3943e8dfd4.png?imageMogr2&#x2F;auto-orient&#x2F;strip%7CimageView2&#x2F;2&#x2F;w&#x2F;1240" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>微信</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">龚世杰</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
